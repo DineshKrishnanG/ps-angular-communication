@@ -8,9 +8,9 @@
         <div class='row'>
             <pm-criteria #filterCriteria class='col-md-10'
                 [displayDetail]='includeDetail'
-                [hitCount]='filteredProducts?.length'>
+                [hitCount]='filteredProducts?.length'
+                (valueChange)='onValueChange($event)' >
             </pm-criteria>
-            {{filterCriteria.listFilter}}
         </div>
 
 
