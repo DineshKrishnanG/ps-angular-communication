@@ -1,8 +1,9 @@
-import { Component, OnInit, ElementRef, ViewChild, AfterViewInit } from '@angular/core';
+import { Component, OnInit, ViewChild, AfterViewInit } from '@angular/core';
 
 import { IProduct } from './product';
 import { ProductService } from './product.service';
 import { NgModel } from '@angular/forms';
+import { CriteriaComponent } from '../shared/criteria/criteria.component';
 
 @Component({
     templateUrl: './product-list.component.html',
@@ -11,7 +12,7 @@ import { NgModel } from '@angular/forms';
 export class ProductListComponent implements OnInit, AfterViewInit {
     pageTitle: string = 'Product List';
     showImage: boolean;
-
+    
     imageWidth: number = 50;
     imageMargin: number = 2;
     errorMessage: string;
@@ -19,7 +20,7 @@ export class ProductListComponent implements OnInit, AfterViewInit {
     filteredProducts: IProduct[];
     products: IProduct[];
 
-    listFilter: string;
+    includeDetail: boolean= true;
     /*
     private _listFilter: string;
     get listFilter(): string {
@@ -30,8 +31,10 @@ export class ProductListComponent implements OnInit, AfterViewInit {
         this.performFilter(this.listFilter);
     }*/
 
-    @ViewChild('FilterElement') filterElement: ElementRef;
+    
     @ViewChild(NgModel) filterInput: NgModel;
+    @ViewChild(CriteriaComponent) filterComponent: CriteriaComponent;
+    parentListFilter: string;
 
     constructor(private productService: ProductService) { }
 
@@ -39,24 +42,14 @@ export class ProductListComponent implements OnInit, AfterViewInit {
         this.productService.getProducts().subscribe(
             (products: IProduct[]) => {
                 this.products = products;
-                this.performFilter(this.listFilter);
+                this.performFilter(this.parentListFilter);
             },
             (error: any) => this.errorMessage = <any>error
         );
     }
-
     ngAfterViewInit(): void {
-        console.log(this.filterInput);
-        this.filterInput.valueChanges.subscribe(
-            () => this.performFilter(this.listFilter)
-        );
-
-        if( this.filterElement.nativeElement ){
-            this.filterElement.nativeElement.focus();
-        }
-        
+        this.parentListFilter = this.filterComponent.listFilter;
     }
-
 
     toggleImage(): void {
         this.showImage = !this.showImage;
